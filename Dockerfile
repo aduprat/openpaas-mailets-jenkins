@@ -16,9 +16,12 @@ USER jenkins
 
 RUN /usr/local/bin/install-plugins.sh blueocean:1.1.4
 RUN /usr/local/bin/install-plugins.sh envinject:2.1.3
+RUN /usr/local/bin/install-plugins.sh ghprb:1.39.0
+RUN /usr/local/bin/install-plugins.sh job-dsl:1.64
 
 # Copy init Jenkins scripts
 COPY basic-authentication.groovy /usr/share/jenkins/ref/init.groovy.d/basic-authentication.groovy
+COPY create-dsl-job.groovy /usr/share/jenkins/ref/init.groovy.d/create-dsl-job.groovy
 
 # Skip initial setup
 ENV JAVA_OPTS -Djenkins.install.runSetupWizard=false
