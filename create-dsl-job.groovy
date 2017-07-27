@@ -18,6 +18,7 @@ import org.jenkinsci.plugins.scriptsecurity.sandbox.Whitelist;
 import org.jenkinsci.plugins.scriptsecurity.sandbox.whitelists.BlanketWhitelist;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.scriptsecurity.sandbox.groovy.SecureGroovyScript;
+import org.jenkinsci.plugins.scriptsecurity.scripts.ApprovalContext;
 
 jenkins = Jenkins.instance;
 jenkins.getExtensionList(Whitelist.class).push(new BlanketWhitelist());
