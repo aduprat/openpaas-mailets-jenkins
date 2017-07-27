@@ -31,7 +31,6 @@ dslBuilder.setTargets("build_github_branch");
 dslBuilder.setRemovedJobAction(RemovedJobAction.DISABLE);
 
 secure = new SecureGroovyScript("build_github_branch", false, null);
-secure.save();
 
 dslProject = new hudson.model.FreeStyleProject(jenkins, jobName);
 dslProject.scm = new GitSCM("https://github.com/aduprat/openpaas-mailets-jenkins.git");
