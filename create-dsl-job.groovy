@@ -17,6 +17,7 @@ import org.jenkinsci.plugins.plaincredentials.impl.StringCredentialsImpl.Descrip
 import org.jenkinsci.plugins.scriptsecurity.sandbox.Whitelist;
 import org.jenkinsci.plugins.scriptsecurity.sandbox.whitelists.BlanketWhitelist;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
+import org.jenkinsci.plugins.scriptsecurity.sandbox.groovy.SecureGroovyScript;
 
 jenkins = Jenkins.instance;
 jenkins.getExtensionList(Whitelist.class).push(new BlanketWhitelist());
@@ -29,8 +30,7 @@ dslBuilder.setUseScriptText(false);
 dslBuilder.setTargets("build_github_branch");
 dslBuilder.setRemovedJobAction(RemovedJobAction.DISABLE);
 
-secure = Jenkins.instance.getExtensionList(org.jenkinsci.plugins.scriptsecurity.sandbox.groovy.SecureGroovyScript.DescriptorImpl.class)[0];
-secure.script = "build_github_branch";
+secure = new SecureGroovyScript("build_github_branch", false, null);
 secure.save();
 
 dslProject = new hudson.model.FreeStyleProject(jenkins, jobName);
