@@ -31,7 +31,7 @@ dslBuilder.setTargets("build-github-branch");
 dslBuilder.setRemovedJobAction(RemovedJobAction.DISABLE);
 
 dslProject = new hudson.model.FreeStyleProject(jenkins, jobName);
-dslProject.scm = new GitSCM("https://github.com/aduprat/openpaas-mailets.git");
+dslProject.scm = new GitSCM("https://github.com/aduprat/openpaas-mailets-jenkins.git");
 dslProject.scm.branches = [new BranchSpec("*/master")];
 dslProject.addTrigger(gitTrigger);
 dslProject.createTransientActions();
@@ -44,7 +44,7 @@ credentials = new StringCredentialsImpl(CredentialsScope.GLOBAL, "b1d836bd-25d3-
 credentialsStore = Jenkins.instance.getExtensionList(com.cloudbees.plugins.credentials.SystemCredentialsProvider.class)[0];
 credentialsStore.store.addCredentials(Domain.global(), credentials);
 
-githubAuth = new GhprbGitHubAuth("https://api.github.com", credentials.getId(), "Github Auth", null, null);
+githubAuth = new GhprbGitHubAuth("https://api.github.com", System.getenv("JENKINS_URL"), credentials.getId(), "Github Auth", null, null);
 ghprbDescriptor = Jenkins.instance.getExtensionList(org.jenkinsci.plugins.ghprb.GhprbTrigger.DescriptorImpl.class)[0];
 auths = new ArrayList();
 auths.add(githubAuth);
@@ -52,7 +52,3 @@ ghprbDescriptor.githubAuth = auths;
 ghprbDescriptor.useComments = true;
 ghprbDescriptor.useDetailedComments = true;
 ghprbDescriptor.save();
-
-ghprbPushDescriptor = Jenkins.instance.getExtensionList(com.cloudbees.jenkins.GitHubPushTrigger.DescriptorImpl.class)[0];
-ghprbPushDescriptor.manageHook = true;
-ghprbPushDescriptor.save();
