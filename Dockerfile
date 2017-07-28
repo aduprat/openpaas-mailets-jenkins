@@ -14,11 +14,12 @@ RUN apt-get update \
 # Install Jenkins plugins
 USER jenkins
 
-RUN /usr/local/bin/install-plugins.sh blueocean:1.1.4
+#RUN /usr/local/bin/install-plugins.sh blueocean:1.1.4
 RUN /usr/local/bin/install-plugins.sh envinject:2.1.3
 RUN /usr/local/bin/install-plugins.sh ghprb:1.39.0
 RUN /usr/local/bin/install-plugins.sh job-dsl:1.64
 RUN /usr/local/bin/install-plugins.sh script-security:1.29.1
+RUN /usr/local/bin/install-plugins.sh workflow-aggregator:2.5
 
 # Copy init Jenkins scripts
 COPY basic-authentication.groovy /usr/share/jenkins/ref/init.groovy.d/basic-authentication.groovy
