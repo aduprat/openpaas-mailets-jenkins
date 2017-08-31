@@ -1,0 +1,55 @@
+pipeline {
+    agent none
+
+    stages {
+        stage('Compile & test') {
+            steps {
+                script {
+                    def splits = splitTests parallelism: [$class: 'CountDrivenParallelism', size: 4], generateInclusions: true
+                
+                    def testGroups = [:]
+                    def maven = docker.image('maven:3.5.0-jdk-8')
+                
+                    for (int i = 0; i < splits.size(); i++) {
+                        echo "Run ${i}"
+                        def split = splits[i]
+                        echo "${split}"
+                
+                        testGroups["split-${i}"] = {
+                            node {
+                                def mavenInstall = 'install -DMaven.test.failure.ignore=true'
+                    
+                                maven.inside {
+                                    echo "${split}"
+                                    git url: 'https://github.com/aduprat/james-project', branch: 'master'
+    
+                                    def workingDir = sh(script: "pwd", returnStdout: true).trim()
+                                    if (split.includes) {
+                                      writeFile file: "target/parallel-test-includes.txt", text: split.list.join("\n")
+                                      mavenInstall += " -Dsurefire.includesFile=${workingDir}/target/parallel-test-includes.txt"
+                                    } else {
+                                      writeFile file: "target/parallel-test-excludes.txt", text: split.list.join("\n")
+                                      mavenInstall += " -Dsurefire.excludesFile=${workingDir}/target/parallel-test-excludes.txt"
+                                    }
+                                    
+                                    def includesFile = "${workingDir}/target/parallel-test-includes.txt"
+                                    if (fileExists(includesFile)) {
+                                        sh "cat ${includesFile}"
+                                    }
+                                    def excludesFile = "${workingDir}/target/parallel-test-excludes.txt"
+                                    if (fileExists(excludesFile)) {
+                                        sh "cat ${excludesFile}"
+                                    }
+                                    mavenInstall += " -am -pl mailbox/cassandra"
+                                    sh "mvn ${mavenInstall}"
+                                    junit '**/target/surefire-reports/TEST-*.xml'
+                                }
+                            }
+                        }
+                    }
+                    parallel testGroups
+                }
+            }
+        }
+    }
+}
